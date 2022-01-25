@@ -38,7 +38,7 @@
 # 사용 안내
 ```shell
 $ ./gradlew bootJar
-$ java -jar [rsupport.jar]
+$ java -jar ./build/libs/rsupport[-0.0.1].jar
 ```
 ```shell
 $ curl -X GET http://localhost:8080/notice/1 -H "Content-Type: application/json"
