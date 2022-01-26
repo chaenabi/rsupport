@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static com.example.rsupport.exception.common.GeneralControllerAdvice.handleValidParameterException;
+import static com.example.rsupport.exception.common.controllerAdvice.GeneralControllerAdvice.handleValidParameterException;
 
 /**
  * 공지사항과 관련된 작업 요청 중 발생하는 예외를 처리하는 컨트롤러 어드바이스
