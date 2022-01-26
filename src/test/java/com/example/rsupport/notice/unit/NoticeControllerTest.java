@@ -4,11 +4,15 @@ import com.example.rsupport.api.notice.controller.NoticeController;
 import com.example.rsupport.api.notice.domain.dto.NoticeRegisterRequestDTO;
 import com.example.rsupport.api.notice.domain.enums.NoticeMessage;
 import com.example.rsupport.api.notice.service.NoticeService;
+import com.example.rsupport.exception.notice.NoticeCrudErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,7 +23,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -59,14 +68,14 @@ public class NoticeControllerTest {
         void successRegister() throws Exception {
             // 준비
             registerRequestDTO = NoticeRegisterRequestDTO.builder()
-                                                        .title("공지사항 제목")
-                                                        .content("공지사항 내용")
-                                                        .startTime(LocalDateTime.now())
-                                                        .endTime(LocalDateTime.now().plusDays(30L))
-                                                        .fileName(List.of("첨부파일1.png", "첨부파일2.zip", "첨부파일3.csv"))
-                                                        .build();
+                                        .title("공지사항 제목")
+                                        .content("공지사항 내용")
+                                        .startTime(LocalDateTime.now())
+                                        .endTime(LocalDateTime.now().plusDays(30L))
+                                        .fileName(List.of("첨부파일1.png", "첨부파일2.zip", "첨부파일3.csv"))
+                                        .build();
 
-            given(noticeService.registerNotice(registerRequestDTO)).willReturn(1L);
+            given(noticeService.registerNotice(any(NoticeRegisterRequestDTO.class))).willReturn(1L);
 
             // 실행
             ResultActions perform = mockmvc.perform(post("/v1/notice")
@@ -78,6 +87,8 @@ public class NoticeControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.data").value(1L))
                     .andExpect(jsonPath("$.message").value(NoticeMessage.SUCCESS_REGISTER_NOTICE.getSuccessMsg()));
+
+            verify(noticeService, times(1)).registerNotice(refEq(registerRequestDTO));
         }
 
         @Test
@@ -99,18 +110,44 @@ public class NoticeControllerTest {
 
             // 검증
             perform.andDo(print())
-                    .andExpect(status().isBadRequest());
+                    .andExpect(status().isBadRequest())
+                    .andExpect((jsonPath("$.errors[*].reason",
+                            containsInAnyOrder(
+                                    NoticeCrudErrorCode.NOTICE_TITLE_IS_EMPTY.getMsg(),
+                                    NoticeCrudErrorCode.NOTICE_TITLE_IS_NULL.getMsg()
+                            )
+                    )));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"    ", "\n", "\t", " "})
+        @DisplayName("공지사항을 등록하는데 필요한 정보가 부족하여 실패합니다_제목이 비어있음")
+        void failRegister_CauseOf_Empty_Title(String emptyTitle) throws Exception {
+            // 준비
+            registerRequestDTO = NoticeRegisterRequestDTO.builder()
+                    .title(emptyTitle)
+                    .content("공지사항 내용")
+                    .startTime(LocalDateTime.now())
+                    .endTime(LocalDateTime.now().plusDays(30L))
+                    .fileName(List.of("첨부파일1.png", "첨부파일2.zip", "첨부파일3.csv"))
+                    .build();
+
+            // 실행
+            ResultActions perform = mockmvc.perform(post("/v1/notice")
+                    .header("Content-Type", MediaType.APPLICATION_JSON + ";charset=UTF-8")
+                    .content(mapper.writeValueAsString(registerRequestDTO)));
+
+            // 검증
+            perform.andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.errors[0].rejectedParameter").value(equalTo("title")))
+                    .andExpect(jsonPath("$.errors[0].internalCode").value(equalTo(NoticeCrudErrorCode.NOTICE_TITLE_IS_EMPTY.getBizCode())))
+                    .andExpect(jsonPath("$.errors[0].reason").value(equalTo(NoticeCrudErrorCode.NOTICE_TITLE_IS_EMPTY.getMsg())));
         }
 
         @Test
         @DisplayName("공지사항을 등록하는데 필요한 정보가 부족하여 실패합니다_내용이 없음")
         void failRegister_CauseOf_Insufficient_Parameter_Content() {
-
-        }
-
-        @Test
-        @DisplayName("공지사항을 등록하는데 필요한 정보가 부족하여 실패합니다_제목이 비어있음")
-        void failRegister_CauseOf_Empty_Title() {
 
         }
 

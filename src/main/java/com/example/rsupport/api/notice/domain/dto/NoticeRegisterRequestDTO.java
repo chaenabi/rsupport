@@ -14,7 +14,6 @@ import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Builder
 @Getter
 public class NoticeRegisterRequestDTO {
 
@@ -40,8 +39,8 @@ public class NoticeRegisterRequestDTO {
     @Builder
     @ConstructorProperties({"title", "content", "startTime", "endTime", "fileName"})
     public NoticeRegisterRequestDTO(String title, String content, LocalDateTime startTime, LocalDateTime endTime, List<String> fileName) {
-        this.title = title;
-        this.content = content;
+        this.title = title != null ? title.trim() : null;
+        this.content = content != null ? content.trim() : null;
         this.startTime = startTime;
         this.endTime = endTime;
         this.fileName = fileName;
