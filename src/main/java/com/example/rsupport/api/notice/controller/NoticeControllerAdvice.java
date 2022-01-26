@@ -1,4 +1,4 @@
-package com.example.rsupport.exception.notice;
+package com.example.rsupport.api.notice.controller;
 
 import com.example.rsupport.exception.common.ErrorResponseDTO;
 import com.example.rsupport.exception.notice.InvalidNoticeParameterException;
@@ -32,17 +32,4 @@ public class NoticeControllerAdvice {
     protected ResponseEntity<ErrorResponseDTO> handleInvalidPostParameterException(InvalidNoticeParameterException e) {
         return handleValidParameterException(e.getHttpStatus(), e.getErrorCode(), e);
     }
-
 }
-/**
- * "message":"매개변수가 충분히 전달되지 못했거나 올바르지 않은 매개변수 값이 전달되었습니다.",
- * "timestamp":"2022-01-26T16:25:26.985","code":400,
- * "status":"BAD_REQUEST",
- * "errors":[{"rejectedParameter":"title","rejectedValue":null,"reason":"공지사항 제목이 반드시 전달되어야 합니다.",
- * "internalCode":-9999},{"rejectedParameter":"title","rejectedValue":null,"reason":"공지사항 제목이 비어 있으면 안됩니다.",
- * "internalCode":-9999}]
- */
-
-/**
- * {"message":"매개변수가 충분히 전달되지 못했거나 올바르지 않은 매개변수 값이 전달되었습니다.","timestamp":"2022-01-26T16:26:08.032","code":400,"status":"BAD_REQUEST"}
- */
