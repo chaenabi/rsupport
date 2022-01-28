@@ -1,5 +1,6 @@
 package com.example.rsupport.api.notice.service;
 
+import com.example.rsupport.api.notice.domain.dto.NoticeDTO;
 import com.example.rsupport.api.notice.domain.dto.NoticeRegisterRequestDTO;
 import com.example.rsupport.api.notice.domain.dto.NoticeUpdateRequestDTO;
 import com.example.rsupport.api.notice.domain.entity.Notice;
@@ -36,9 +37,18 @@ public class NoticeService {
         return savedNotice.getId();
     }
 
-    public Long updateNotice(NoticeUpdateRequestDTO dto) {
+    public Long updateNotice(NoticeUpdateRequestDTO dto, List<MultipartFile> attachFiles) {
         Notice wantToUpdateNotice = noticeRepository.findById(dto.getNoticeId())
                 .orElseThrow(() -> new BizException(NoticeCrudErrorCode.NOTICE_NOT_FOUND));
+
+        wantToUpdateNotice.setTitle(dto.getTitle());
+        wantToUpdateNotice.setContent(dto.getContent());
+
+        List<NoticeAttachFile> files = attachFileManager.saveUploadFilesToDisk(attachFiles, wantToUpdateNotice);
+        List<NoticeAttachFile> savedAttachFiles = noticeAttachFileRepository.findByNoticeId(wantToUpdateNotice.getId());
+        noticeAttachFileRepository.deleteAll(savedAttachFiles);
+        noticeAttachFileRepository.flush();
+        noticeAttachFileRepository.saveAll(files);
 
         return wantToUpdateNotice.getId();
     }
@@ -51,5 +61,17 @@ public class NoticeService {
         noticeRepository.deleteById(noticeId);
     }
 
-
+    public NoticeDTO selectNoticeOne(Long noticeId) {
+        Notice findNotice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new BizException(NoticeCrudErrorCode.NOTICE_NOT_FOUND));
+        findNotice.setSawCount(findNotice.getSawCount() + 1);
+        return NoticeDTO.builder()
+                .noticeId(findNotice.getId())
+                .title(findNotice.getTitle())
+                .content(findNotice.getContent())
+                .startTime(findNotice.getStartTime())
+                .endTime(findNotice.getEndTime())
+                .sawCount(findNotice.getSawCount())
+                .build();
+    }
 }
