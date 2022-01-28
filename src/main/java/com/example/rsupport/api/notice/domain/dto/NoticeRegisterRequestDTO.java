@@ -28,11 +28,26 @@ public class NoticeRegisterRequestDTO {
     }
 
     public Notice toEntity() {
+        LocalDateTime startTime = LocalDateTime.now();
+        LocalDateTime endTime = startTime.plusDays(30);
+
         return Notice.builder()
                 .title(title)
                 .content(content)
-                .startTime(LocalDateTime.now())
-                .endTime(LocalDateTime.now().plusDays(30))
+                .startTime(LocalDateTime.of(
+                        startTime.getYear(),
+                        startTime.getMonth(),
+                        startTime.getDayOfMonth(),
+                        startTime.getHour(),
+                        startTime.getMinute(),
+                        startTime.getSecond()))
+                .endTime(LocalDateTime.of(
+                        endTime.getYear(),
+                        endTime.getMonth(),
+                        endTime.getDayOfMonth(),
+                        endTime.getHour(),
+                        endTime.getMinute(),
+                        endTime.getSecond()))
                 .build();
     }
 }
