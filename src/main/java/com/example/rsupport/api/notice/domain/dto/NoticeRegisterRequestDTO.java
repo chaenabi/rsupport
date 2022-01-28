@@ -1,18 +1,13 @@
 package com.example.rsupport.api.notice.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.example.rsupport.api.notice.domain.entity.Notice;
 import lombok.Builder;
 import lombok.Getter;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
 import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 public class NoticeRegisterRequestDTO {
@@ -25,24 +20,19 @@ public class NoticeRegisterRequestDTO {
     @NotEmpty(message = "공지사항 내용이 비어 있으면 안됩니다.")
     private final String content;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private final LocalDateTime startTime;
-
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private final LocalDateTime endTime;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private final List<String> fileName;
-
     @Builder
-    @ConstructorProperties({"title", "content", "startTime", "endTime", "fileName"})
-    public NoticeRegisterRequestDTO(String title, String content, LocalDateTime startTime, LocalDateTime endTime, List<String> fileName) {
+    @ConstructorProperties({"title", "content"})
+    public NoticeRegisterRequestDTO(String title, String content) {
         this.title = title != null ? title.trim() : null;
         this.content = content != null ? content.trim() : null;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.fileName = fileName;
+    }
+
+    public Notice toEntity() {
+        return Notice.builder()
+                .title(title)
+                .content(content)
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now().plusDays(30))
+                .build();
     }
 }
