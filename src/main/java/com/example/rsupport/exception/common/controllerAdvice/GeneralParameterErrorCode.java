@@ -11,9 +11,9 @@ import java.util.Arrays;
  * 목록으로 가지는 열거형 클래스.
  *
  * @author MC Lee
+ * @created 2022-01-26
  * @since 2.6.3 spring boot
  * @since 0.0.1 dev
- * @created 2022-01-26
  */
 @Getter
 public enum GeneralParameterErrorCode implements ErrorCode {

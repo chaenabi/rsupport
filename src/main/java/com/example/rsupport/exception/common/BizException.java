@@ -9,9 +9,9 @@ import org.springframework.http.HttpStatus;
  * BizException은 미리 협의된 내부 에러코드(Internal Server errorCode)를 가지지 않습니다.
  *
  * @author MC Lee
+ * @created 2022-01-26
  * @since 2.6.3 spring boot
  * @since 0.0.1 dev
- * @created 2022-01-26
  */
 @Getter
 public class BizException extends RuntimeException {

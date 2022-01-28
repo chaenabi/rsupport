@@ -1,4 +1,4 @@
-package com.example.rsupport.api.notice.common;
+package com.example.rsupport.api.common;
 
 public interface SuccessMessage {
     String getSuccessMsg();

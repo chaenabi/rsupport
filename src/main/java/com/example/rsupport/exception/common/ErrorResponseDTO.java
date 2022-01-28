@@ -23,9 +23,9 @@ import java.util.Objects;
  * 클라이언트 측에 반환하는 에러 메시지를 제어하는 클래스.
  *
  * @author MC Lee
+ * @created 2022-01-26
  * @since 2.6.3 spring boot
  * @since 0.0.1 dev
- * @created 2022-01-26
  */
 
 @Getter
@@ -69,7 +69,8 @@ public class ErrorResponseDTO {
         private HttpStatus httpStatus;
         private List<CustomFieldError> customFieldErrors;
 
-        private ErrorResponseDTOBuilder() {}
+        private ErrorResponseDTOBuilder() {
+        }
 
         public ErrorResponseDTOBuilder errorCode(Integer code) {
             this.errorCode = code;
