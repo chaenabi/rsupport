@@ -20,9 +20,9 @@ import static com.example.rsupport.exception.common.controllerAdvice.GeneralCont
  * 전역 에러 핸들링
  *
  * @author MC Lee
+ * @created 2022-01-26
  * @since 2.6.3 spring boot
  * @since 0.0.1 dev
- * @created 2022-01-26
  */
 @Slf4j
 @RestControllerAdvice
@@ -37,7 +37,6 @@ public class MainControllerAdvice {
      */
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponseDTO> handleException(Exception e) {
-        System.out.println("CHARLIE handleException");
         return handleGeneralException(HttpStatus.INTERNAL_SERVER_ERROR, e);
     }
 
@@ -58,10 +57,10 @@ public class MainControllerAdvice {
 
     /**
      * 잘못된 인수로 요청이 왔을 경우 처리합니다.
-     *
+     * <p>
      * 예시: StrangeProtocol://www.homepage.com/...
      * 예시: http://www.homepage.com?data={HackingAttack}
-     *
+     * <p>
      * IllegalArgumentException과 MalformedURLException은 한 묶음입니다.
      *
      * @return 400
@@ -70,6 +69,7 @@ public class MainControllerAdvice {
     protected ResponseEntity<ErrorResponseDTO> handleIllgegalURLException(IllegalArgumentException iae) {
         return handleGeneralException(HttpStatus.BAD_REQUEST, iae);
     }
+
     @ExceptionHandler(MalformedURLException.class)
     protected ResponseEntity<ErrorResponseDTO> handleMalformedURLException(MalformedURLException mue) {
         return handleGeneralException(HttpStatus.BAD_REQUEST, mue);

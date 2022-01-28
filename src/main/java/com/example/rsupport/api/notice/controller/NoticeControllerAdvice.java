@@ -12,9 +12,9 @@ import static com.example.rsupport.exception.common.controllerAdvice.GeneralCont
  * 공지사항과 관련된 작업 요청 중 발생하는 예외를 처리하는 컨트롤러 어드바이스
  *
  * @author MC Lee
+ * @created 2022-01-26
  * @since 2.6.3 spring boot
  * @since 0.0.1 dev
- * @created 2022-01-26
  */
 @RestControllerAdvice
 public class NoticeControllerAdvice {

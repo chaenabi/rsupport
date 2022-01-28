@@ -4,7 +4,6 @@ import com.example.rsupport.exception.common.BizException;
 import com.example.rsupport.exception.common.ErrorCode;
 import com.example.rsupport.exception.common.ErrorResponseDTO;
 import com.example.rsupport.exception.common.InvalidParameterException;
-import com.example.rsupport.exception.common.controllerAdvice.GeneralParameterErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,9 +17,9 @@ import java.util.Objects;
  * 정형화된 에러 처리를 위한 유틸리티 클래스.
  *
  * @author MC Lee
+ * @created 2022-01-26
  * @since 2.6.3 spring boot
  * @since 0.0.1 dev
- * @created 2022-01-26
  */
 @Slf4j
 public class GeneralControllerAdvice {
@@ -55,7 +54,6 @@ public class GeneralControllerAdvice {
      * @return ResponseEntity<ErrorResponseDTO>
      */
     public static ResponseEntity<ErrorResponseDTO> handleValidParameterException(HttpStatus httpStatus, ErrorCode errorCode, InvalidParameterException... e) {
-        System.out.println("CHARLE 2");
 
         ErrorResponseDTO response = ErrorResponseDTO.builder()
                 .errorCode(httpStatus.value())
@@ -70,7 +68,7 @@ public class GeneralControllerAdvice {
                         .orElseThrow(() -> new BizException(GeneralParameterErrorCode.INVALID_PARAMETER))
                         .getErrors(), errorCode)
                 .build();
-        log.error("{} charlie", response.getCustomFieldErrors());
+
         return new ResponseEntity<>(response, getHttpHeader(), httpStatus);
     }
 
