@@ -18,3 +18,5 @@ spring:
   h2:
     console:
       enabled: true
+
+upload-directory: src/main/resources/upload

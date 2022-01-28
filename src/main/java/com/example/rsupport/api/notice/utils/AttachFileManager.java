@@ -3,6 +3,7 @@ package com.example.rsupport.api.notice.utils;
 import com.example.rsupport.api.notice.domain.dto.NoticeAttachFileDTO;
 import com.example.rsupport.api.notice.domain.entity.Notice;
 import com.example.rsupport.api.notice.domain.entity.NoticeAttachFile;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +32,8 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
 @Component
 public class AttachFileManager {
 
-    private final String DEFAULT_UPLOAD_DIRECTORY = "src/main/resources/upload";
+    @Value("${upload-directory}")
+    private String DEFAULT_UPLOAD_DIRECTORY;
 
     /**
      * 업로드 파일들을 지정된 경로에 모두 저장하고 첨부파일 목록을 반환하여
