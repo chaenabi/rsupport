@@ -25,25 +25,25 @@ public class Notice {
     @GeneratedValue(strategy = AUTO)
     @Column(name = "notice_id")
     private Long id;
-
     private String title;
     private String content;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private int sawCount;
 
-    @OneToMany(mappedBy = "notice", cascade = {PERSIST, REMOVE}, orphanRemoval = true, fetch = LAZY)
+    @OneToMany(mappedBy = "notice", cascade = {REMOVE}, orphanRemoval = true, fetch = LAZY)
     private List<NoticeAttachFile> attachFile;
 
-    public Notice() {
-    }
+    public Notice() {}
 
     @Builder
-    public Notice(Long id, String title, String content, LocalDateTime startTime, LocalDateTime endTime, List<NoticeAttachFile> attachFile) {
+    public Notice(Long id, String title, String content, LocalDateTime startTime, LocalDateTime endTime, int sawCount, List<NoticeAttachFile> attachFile) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.sawCount = sawCount;
         this.attachFile = attachFile;
     }
 }
