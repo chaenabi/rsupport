@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.AUTO;
 
@@ -23,7 +23,7 @@ public class NoticeAttachFile {
 
     private String filename;
 
-    @ManyToOne(cascade = ALL, fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "notice_id")
     private Notice notice;
 
