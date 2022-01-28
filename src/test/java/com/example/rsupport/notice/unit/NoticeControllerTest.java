@@ -429,7 +429,7 @@ public class NoticeControllerTest {
             // 검증
             perform.andDo(print())
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.errors[0].reason").value(equalTo(NoticeCrudErrorCode.NOTICE_CONTENT_IS_EMPTY.getMsg())));
+                    .andExpect(jsonPath("message").value(equalTo(NoticeMessage.SUCCESS_NOTICE_DELETE.getSuccessMsg())));
 
             verify(noticeService, times(1)).removeNotice(noticeId);
         }

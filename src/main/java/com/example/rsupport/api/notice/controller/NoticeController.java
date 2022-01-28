@@ -46,7 +46,7 @@ public class NoticeController {
     @DeleteMapping("/notice/{noticeId}")
     public ResponseDTO<Void> removeNotice(@PathVariable Long noticeId) {
         noticeService.removeNotice(noticeId);
-        return new ResponseDTO<>(NoticeMessage.SUCCESS_NOTICE_UPDATE, HttpStatus.OK);
+        return new ResponseDTO<>(NoticeMessage.SUCCESS_NOTICE_DELETE, HttpStatus.OK);
     }
 
 }
