@@ -28,7 +28,7 @@ public class NoticeService {
     private final NoticeAttachFileRepository noticeAttachFileRepository;
     private final AttachFileManager attachFileManager;
 
-    public Long registerNotice(NoticeRegisterRequestDTO dto, List<MultipartFile> attachFiles)n {
+    public Long registerNotice(NoticeRegisterRequestDTO dto, List<MultipartFile> attachFiles) {
         Notice savedNotice = noticeRepository.save(dto.toEntity());
         List<NoticeAttachFile> files = attachFileManager.saveUploadFilesToDisk(attachFiles, savedNotice);
         noticeAttachFileRepository.saveAll(files);
