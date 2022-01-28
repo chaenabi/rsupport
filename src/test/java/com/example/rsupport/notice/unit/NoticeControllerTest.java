@@ -1,6 +1,7 @@
 package com.example.rsupport.notice.unit;
 
 import com.example.rsupport.api.notice.controller.NoticeController;
+import com.example.rsupport.api.notice.domain.dto.NoticeDTO;
 import com.example.rsupport.api.notice.domain.dto.NoticeRegisterRequestDTO;
 import com.example.rsupport.api.notice.domain.dto.NoticeUpdateRequestDTO;
 import com.example.rsupport.api.notice.domain.enums.NoticeMessage;
@@ -23,8 +24,10 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -73,6 +76,7 @@ public class NoticeControllerTest {
 
         @Test
         @DisplayName("공지사항 등록이 성공적으로 수행되어야 합니다")
+        @SuppressWarnings("unchecked")
         void successRegister() throws Exception {
             // 준비
             registerRequestDTO = NoticeRegisterRequestDTO.builder()
@@ -105,6 +109,7 @@ public class NoticeControllerTest {
 
         @Test
         @DisplayName("공지사항 등록이 성공적으로 수행되어야 합니다_다중 첨부파일 포함")
+        @SuppressWarnings("unchecked")
         void successRegisterIncludeAttachFiles() throws Exception {
             // 준비
             registerRequestDTO = NoticeRegisterRequestDTO.builder()
@@ -261,11 +266,6 @@ public class NoticeControllerTest {
                     .andExpect(jsonPath("$.errors[0].reason").value(equalTo(NoticeCrudErrorCode.NOTICE_CONTENT_IS_EMPTY.getMsg())));
         }
 
-        @Test
-        @DisplayName("공지사항을 등록하는데 필요한 권한이 부족하여 실패합니다")
-        void failRegister_CauseOf_Insufficient_Authorization() {
-
-        }
     }
 
     @Nested
@@ -277,19 +277,27 @@ public class NoticeControllerTest {
 
         @Test
         @DisplayName("공지사항 수정이 성공적으로 수행되어야 합니다")
+        @SuppressWarnings("unchecked")
         void successUpdate() throws Exception {
             // 준비
             updateRequestDTO = NoticeUpdateRequestDTO.builder()
-                    .title("공지사항 수정된 제목")
-                    .content("공지사항 수정된 내용")
+                    .noticeId(1L)
+                    .title("수정된 공지사항 제목")
+                    .content("수정된 공지사항 내용")
                     .build();
 
-            given(noticeService.updateNotice(any(NoticeUpdateRequestDTO.class))).willReturn(1L);
+            File patchFile = new File("src/test/resources/avatar.jpg");
+            given(noticeService.updateNotice(any(NoticeUpdateRequestDTO.class), any(List.class))).willReturn(1L);
+            MockMultipartFile data = new MockMultipartFile("data", "", APPLICATION_JSON_VALUE, mapper.writeValueAsString(updateRequestDTO).getBytes());
+            MockMultipartFile attachFile = new MockMultipartFile("attachFiles", patchFile.getName(), MULTIPART_FORM_DATA_VALUE, patchFile.getName().getBytes());
 
             // 실행
-            ResultActions perform = mockmvc.perform(patch("/v1/notice")
-                    .header("Content-Type", MediaType.APPLICATION_JSON + ";charset=UTF-8")
-                    .content(mapper.writeValueAsString(updateRequestDTO)));
+            ResultActions perform = mockmvc.perform(multipart("/v1/notice-update")
+                    .file(data)
+                    .file(attachFile)
+                    .characterEncoding("UTF-8")
+                    .header("Content-Type", MediaType.MULTIPART_FORM_DATA)
+            );
 
             // 검증
             perform.andDo(print())
@@ -297,7 +305,33 @@ public class NoticeControllerTest {
                     .andExpect(jsonPath("$.data").value(1L))
                     .andExpect(jsonPath("$.message").value(NoticeMessage.SUCCESS_NOTICE_UPDATE.getSuccessMsg()));
 
-            verify(noticeService, times(1)).updateNotice(refEq(updateRequestDTO));
+            verify(noticeService, times(1)).updateNotice(refEq(updateRequestDTO), any(List.class));
+        }
+
+        @Test
+        @DisplayName("공지사항을 수정하는데 필요한 정보가 부족하여 실패합니다_공지사항 고유번호가 없음")
+        void failUpdate_CauseOf_Insufficient_Parameter_NoticeId() throws Exception {
+            // 준비
+            updateRequestDTO = NoticeUpdateRequestDTO.builder()
+                    //.noticeId(1L)
+                    .title("공지사항 수정된 제목")
+                    .content("공지사항 수정된 내용")
+                    .build();
+            MockMultipartFile data = new MockMultipartFile(
+                    "data",
+                    "",
+                    APPLICATION_JSON_VALUE,
+                    mapper.writeValueAsString(updateRequestDTO).getBytes());
+
+
+            // 실행
+            ResultActions perform = mockmvc.perform(multipart("/v1/notice-update")
+                    .file(data));
+
+            // 검증
+            perform.andDo(print())
+                    .andExpect(status().isBadRequest())
+                    .andExpect((jsonPath("$.errors[0].reason", equalTo(NoticeCrudErrorCode.NOTICE_ID_IS_NULL.getMsg()))));
         }
 
         @Test
@@ -305,14 +339,18 @@ public class NoticeControllerTest {
         void failUpdate_CauseOf_Insufficient_Parameter_Title() throws Exception {
             // 준비
             updateRequestDTO = NoticeUpdateRequestDTO.builder()
+                    .noticeId(1L)
                     //.title("공지사항 수정된 제목")
                     .content("공지사항 수정된 내용")
                     .build();
+            MockMultipartFile data = new MockMultipartFile(
+                    "data",
+                    "", APPLICATION_JSON_VALUE,
+                    mapper.writeValueAsString(updateRequestDTO).getBytes());
 
             // 실행
-            ResultActions perform = mockmvc.perform(patch("/v1/notice")
-                    .header("Content-Type", MediaType.APPLICATION_JSON + ";charset=UTF-8")
-                    .content(mapper.writeValueAsString(updateRequestDTO)));
+            ResultActions perform = mockmvc.perform(multipart("/v1/notice-update")
+                    .file(data));
 
             // 검증
             perform.andDo(print())
@@ -330,14 +368,18 @@ public class NoticeControllerTest {
         void failUpdate_CauseOf_Insufficient_Parameter_Content() throws Exception {
             // 준비
             updateRequestDTO = NoticeUpdateRequestDTO.builder()
+                    .noticeId(1L)
                     .title("공지사항 수정된 제목")
                     //.content("공지사항 수정된 내용")
                     .build();
+            MockMultipartFile data = new MockMultipartFile(
+                    "data",
+                    "",
+                    APPLICATION_JSON_VALUE, mapper.writeValueAsString(updateRequestDTO).getBytes());
 
             // 실행
-            ResultActions perform = mockmvc.perform(patch("/v1/notice")
-                    .header("Content-Type", MediaType.APPLICATION_JSON + ";charset=UTF-8")
-                    .content(mapper.writeValueAsString(updateRequestDTO)));
+            ResultActions perform = mockmvc.perform(multipart("/v1/notice-update")
+                    .file(data));
 
             // 검증
             perform.andDo(print())
@@ -356,20 +398,23 @@ public class NoticeControllerTest {
         void failUpdate_CauseOf_Empty_Title(String emptyTitle) throws Exception {
             // 준비
             updateRequestDTO = NoticeUpdateRequestDTO.builder()
+                    .noticeId(1L)
                     .title(emptyTitle)
                     .content("공지사항 수정된 내용")
                     .build();
+            MockMultipartFile data = new MockMultipartFile(
+                    "data",
+                    "", APPLICATION_JSON_VALUE,
+                    mapper.writeValueAsString(updateRequestDTO).getBytes());
 
             // 실행
-            ResultActions perform = mockmvc.perform(patch("/v1/notice")
-                    .header("Content-Type", MediaType.APPLICATION_JSON + ";charset=UTF-8")
-                    .content(mapper.writeValueAsString(updateRequestDTO)));
+            ResultActions perform = mockmvc.perform(multipart("/v1/notice-update")
+                    .file(data));
 
             // 검증
             perform.andDo(print())
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.errors[0].internalCode").value(equalTo(NoticeCrudErrorCode.NOTICE_TITLE_IS_EMPTY.getBizCode())))
-                    .andExpect(jsonPath("$.errors[0].reason").value(equalTo(NoticeCrudErrorCode.NOTICE_TITLE_IS_EMPTY.getMsg())));
+                    .andExpect((jsonPath("$.errors[0].reason", equalTo(NoticeCrudErrorCode.NOTICE_TITLE_IS_EMPTY.getMsg()))));
         }
 
         @ParameterizedTest
@@ -378,26 +423,23 @@ public class NoticeControllerTest {
         void failUpdate_CauseOf_Empty_Content(String emptyContent) throws Exception {
             // 준비
             updateRequestDTO = NoticeUpdateRequestDTO.builder()
+                    .noticeId(1L)
                     .title("공지사항 수정된 제목")
                     .content(emptyContent)
                     .build();
+            MockMultipartFile data = new MockMultipartFile(
+                    "data",
+                    "", APPLICATION_JSON_VALUE,
+                    mapper.writeValueAsString(updateRequestDTO).getBytes());
 
             // 실행
-            ResultActions perform = mockmvc.perform(patch("/v1/notice")
-                    .header("Content-Type", MediaType.APPLICATION_JSON + ";charset=UTF-8")
-                    .content(mapper.writeValueAsString(updateRequestDTO)));
+            ResultActions perform = mockmvc.perform(multipart("/v1/notice-update")
+                    .file(data));
 
             // 검증
             perform.andDo(print())
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.errors[0].internalCode").value(equalTo(NoticeCrudErrorCode.NOTICE_CONTENT_IS_EMPTY.getBizCode())))
-                    .andExpect(jsonPath("$.errors[0].reason").value(equalTo(NoticeCrudErrorCode.NOTICE_CONTENT_IS_EMPTY.getMsg())));
-        }
-
-        @Test
-        @DisplayName("공지사항을 등록하는데 필요한 권한이 부족하여 실패합니다")
-        void failUpdate_CauseOf_Insufficient_Authorization() {
-
+                    .andExpect((jsonPath("$.errors[0].reason", equalTo(NoticeCrudErrorCode.NOTICE_CONTENT_IS_EMPTY.getMsg()))));
         }
 
         private List<Arguments> emptyData() {
@@ -461,14 +503,67 @@ public class NoticeControllerTest {
 
         @Test
         @DisplayName("공지사항 단건 조회가 성공적으로 수행되어야 합니다")
-        void successSelectOne() {
+        void successSelectOne() throws Exception {
+            // 준비
+            Long noticeId = 1L;
+            LocalDateTime startTime = LocalDateTime.now();
+            LocalDateTime endTime = startTime.plusDays(30);
 
+            NoticeDTO noticeDTO = NoticeDTO.builder()
+                    .noticeId(noticeId)
+                    .title("조회된 공지사항 제목")
+                    .content("조회된 공지사항 내용")
+                    .startTime(LocalDateTime.of(
+                                    startTime.getYear(),
+                                    startTime.getMonth(),
+                                    startTime.getDayOfMonth(),
+                                    startTime.getHour(),
+                                    startTime.getMinute(),
+                                    startTime.getSecond()))
+                    .endTime(LocalDateTime.of(
+                                    endTime.getYear(),
+                                    endTime.getMonth(),
+                                    endTime.getDayOfMonth(),
+                                    endTime.getHour(),
+                                    endTime.getMinute(),
+                                    endTime.getSecond()))
+                    .sawCount(1)
+                    .build();
+
+            given(noticeService.selectNoticeOne(noticeId)).willReturn(noticeDTO);
+
+            // 실행
+            ResultActions perform = mockmvc.perform(get("/v1/notice/{noticeId}", noticeId)
+                    .header("Content-Type", MediaType.APPLICATION_JSON + ";charset=UTF-8"));
+
+            // 검증
+            perform.andDo(print())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("message").value(equalTo(NoticeMessage.SUCCESS_NOTICE_SELECTONE.getSuccessMsg())))
+                    .andExpect(jsonPath("data.noticeId").value(equalTo(1)))
+                    .andExpect(jsonPath("data.title").value(equalTo(noticeDTO.getTitle())))
+                    .andExpect(jsonPath("data.content").value(equalTo(noticeDTO.getContent())))
+                    .andExpect(jsonPath("data.startTime").value(equalTo(noticeDTO.getStartTime().toString())))
+                    .andExpect(jsonPath("data.endTime").value(equalTo(noticeDTO.getEndTime().toString())))
+                    .andExpect(jsonPath("data.sawCount").value(equalTo(1)));
+            verify(noticeService, times(1)).selectNoticeOne(noticeId);
         }
 
         @Test
         @DisplayName("단건 조회하려는 공지사항이 존재하지 않아 실패합니다")
-        void failSelectOne() {
+        void failSelectOne() throws Exception {
+            // 준비
+            Long noticeId = -1L;
+            doThrow(new BizException(NoticeCrudErrorCode.NOTICE_NOT_FOUND)).when(noticeService).selectNoticeOne(noticeId);
 
+            // 실행
+            ResultActions perform = mockmvc.perform(get("/v1/notice/{noticeId}", noticeId)
+                    .header("Content-Type", MediaType.APPLICATION_JSON + ";charset=UTF-8"));
+
+            // 검증
+            perform.andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").value(equalTo(NoticeCrudErrorCode.NOTICE_NOT_FOUND.getMsg())));
         }
     }
 }
