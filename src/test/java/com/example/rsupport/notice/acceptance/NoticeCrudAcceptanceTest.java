@@ -2,30 +2,37 @@ package com.example.rsupport.notice.acceptance;
 
 import com.example.rsupport.api.notice.domain.dto.NoticeRegisterRequestDTO;
 import com.example.rsupport.api.notice.domain.enums.NoticeMessage;
+import com.example.rsupport.exception.common.controllerAdvice.GeneralParameterErrorCode;
+import com.example.rsupport.exception.notice.NoticeCrudErrorCode;
+import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.LocalDateTime;
+import java.io.File;
 import java.util.List;
 
+import static com.example.rsupport.exception.common.controllerAdvice.GeneralParameterErrorCode.INVALID_PARAMETER;
+import static com.example.rsupport.exception.notice.NoticeCrudErrorCode.*;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.documentationConfiguration;
 
@@ -39,6 +46,7 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureRestDocs
 public class NoticeCrudAcceptanceTest {
 
@@ -55,30 +63,24 @@ public class NoticeCrudAcceptanceTest {
                 .build();
     }
 
-
     @Nested
     @DisplayName("공지사항 등록 테스트")
     class RegisterNoticeTest {
 
-        private NoticeRegisterRequestDTO registerDTO;
+        private NoticeRegisterRequestDTO requestDTO;
 
         @Test
-        @DisplayName("공지사항 등록 성공")
-        void successRegisterNotice() {
+        @DisplayName("공지사항 등록 성공_첨부파일 미포함")
+        void successRegisterNotice_Without_AttachFile() {
             // 준비
-            registerDTO = NoticeRegisterRequestDTO.builder()
-                    .title("공지사항 제목")
-                    .content("공지사항 내용")
-                    .startTime(LocalDateTime.now())
-                    .endTime(LocalDateTime.now().plusDays(30L))
-                    .fileName(List.of("첨부파일1.png", "첨부파일2.zip", "첨부파일3.csv"))
+            requestDTO = NoticeRegisterRequestDTO.builder()
+                    .title("notice title")
+                    .content("notice content")
                     .build();
 
             RequestSpecification given = given(NoticeCrudAcceptanceTest.this.spec)
-                    .accept(MediaType.APPLICATION_JSON_VALUE)
-                    .contentType(ContentType.JSON)
                     .filter(document("notice"))
-                    .body(registerDTO).log().all();
+                    .multiPart("data", new Gson().toJson(requestDTO), APPLICATION_JSON_VALUE);
 
             // 실행
             Response when = given.when()
@@ -86,11 +88,106 @@ public class NoticeCrudAcceptanceTest {
 
             // 검증
             when.then()
-                    .statusCode(HttpStatus.OK.value())
+                    .statusCode(OK.value())
                     .assertThat()
                     .body("data", equalTo(1)).log().all()
-                    .body("message", equalTo(NoticeMessage.SUCCESS_REGISTER_NOTICE.getSuccessMsg())).log().all();
+                    .body("message", equalTo(NoticeMessage.SUCCESS_NOTICE_REGISTER.getSuccessMsg())).log().all();
+        }
+
+        @Test
+        @DisplayName("공지사항 등록 성공_다중 첨부파일 포함")
+        void successRegisterNotice_With_AttachFiles() {
+            // 준비
+            requestDTO = NoticeRegisterRequestDTO.builder()
+                    .title("notice title")
+                    .content("notice content")
+                    .build();
+
+            RequestSpecification given = given(NoticeCrudAcceptanceTest.this.spec)
+                    .filter(document("notice"))
+                    .multiPart("data", new Gson().toJson(requestDTO), APPLICATION_JSON_VALUE)
+                    .multiPart("attachFiles", new File("src/test/resources/avatar.jpg"), MULTIPART_FORM_DATA_VALUE)
+                    .multiPart("attachFiles", new File("src/test/resources/notice.zip"), MULTIPART_FORM_DATA_VALUE);
+
+            // 실행
+            Response when = given.when()
+                    .post("/v1/notice");
+
+            // 검증
+            when.then()
+                    .statusCode(OK.value())
+                    .assertThat()
+                    .body("data", equalTo(1)).log().all()
+                    .body("message", equalTo(NoticeMessage.SUCCESS_NOTICE_REGISTER.getSuccessMsg())).log().all();
+        }
+
+
+        @Test
+        @DisplayName("공지사항 등록 실패_제목이 없음")
+        void failRegister_No_Title() {
+            // 준비
+            requestDTO = NoticeRegisterRequestDTO.builder()
+                    //.title("notice title")
+                    .content("notice content")
+                    .build();
+
+            RequestSpecification given = given(NoticeCrudAcceptanceTest.this.spec)
+                    .filter(document("notice"))
+                    .multiPart("data", new Gson().toJson(requestDTO), APPLICATION_JSON_VALUE)
+                    .multiPart("attachFiles", new File("src/test/resources/avatar.jpg"), MULTIPART_FORM_DATA_VALUE)
+                    .multiPart("attachFiles", new File("src/test/resources/notice.zip"), MULTIPART_FORM_DATA_VALUE);
+
+            // 실행
+            Response when = given.when()
+                    .post("/v1/notice");
+
+            // 검증
+            when.then()
+                    .statusCode(BAD_REQUEST.value())
+                    .assertThat()
+                    .body("message", equalTo(INVALID_PARAMETER.getMsg()))
+                    .body("code", equalTo(NOTICE_TITLE_IS_NULL.getHttpStatus().value()));
+
+            List<String> list = when.then()
+                    .extract()
+                    .jsonPath()
+                    .getList("errors.reason");
+
+            assertThat(list).containsExactlyInAnyOrder(NOTICE_TITLE_IS_NULL.getMsg(), NOTICE_TITLE_IS_EMPTY.getMsg());
+        }
+
+        @Test
+        @DisplayName("공지사항 등록 실패_내용이 없음")
+        void failRegisterNotice_No_Content() {
+            // 준비
+            requestDTO = NoticeRegisterRequestDTO.builder()
+                    .title("notice title")
+                    //.content("notice content")
+                    .build();
+
+            RequestSpecification given = given(NoticeCrudAcceptanceTest.this.spec)
+                    .filter(document("notice"))
+                    .multiPart("data", new Gson().toJson(requestDTO), APPLICATION_JSON_VALUE)
+                    .multiPart("attachFiles", new File("src/test/resources/avatar.jpg"), MULTIPART_FORM_DATA_VALUE)
+                    .multiPart("attachFiles", new File("src/test/resources/notice.zip"), MULTIPART_FORM_DATA_VALUE);
+
+            // 실행
+            Response when = given.when()
+                    .post("/v1/notice");
+
+            // 검증
+            when.then()
+                    .statusCode(BAD_REQUEST.value())
+                    .assertThat()
+                    .body("message", equalTo(INVALID_PARAMETER.getMsg()))
+                    .body("code", equalTo(NOTICE_CONTENT_IS_NULL.getHttpStatus().value()));
+
+            List<String> list = when.then()
+                    .extract()
+                    .jsonPath()
+                    .getList("errors.reason");
+
+            assertThat(list).containsExactlyInAnyOrder(NOTICE_CONTENT_IS_NULL.getMsg(), NOTICE_CONTENT_IS_EMPTY.getMsg());
         }
     }
-
 }
