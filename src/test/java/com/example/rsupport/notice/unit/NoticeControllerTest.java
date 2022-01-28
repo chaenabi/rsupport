@@ -53,6 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 0.0.1 dev
  */
 @WebMvcTest(controllers = NoticeController.class)
+@DisplayName("공지사항 컨트롤러 테스트")
 public class NoticeControllerTest {
 
     @Autowired
@@ -65,6 +66,7 @@ public class NoticeControllerTest {
     private NoticeService noticeService;
 
     @Nested
+    @DisplayName("공지사항 등록 테스트")
     class NoticeRegisterTest {
 
         private NoticeRegisterRequestDTO registerRequestDTO;
@@ -267,6 +269,7 @@ public class NoticeControllerTest {
     }
 
     @Nested
+    @DisplayName("공지사항 수정 테스트")
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class NoticeUpdateTest {
 
@@ -408,6 +411,7 @@ public class NoticeControllerTest {
     }
 
     @Nested
+    @DisplayName("공지사항 삭제 테스트")
     class NoticeDeleteTest {
 
         @Test
@@ -452,6 +456,7 @@ public class NoticeControllerTest {
     }
 
     @Nested
+    @DisplayName("공지사항 단건 조회 테스트")
     class NoticeSelectOneTest {
 
         @Test

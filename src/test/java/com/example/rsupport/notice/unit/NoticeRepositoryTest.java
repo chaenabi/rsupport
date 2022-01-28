@@ -1,5 +1,6 @@
 package com.example.rsupport.notice.unit;
 
+import org.junit.jupiter.api.DisplayName;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 /**
@@ -11,5 +12,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
  * @created 2022-01-26
  */
 @DataJpaTest
+@DisplayName("공지사항 레포지토리 테스트")
 public class NoticeRepositoryTest {
 }

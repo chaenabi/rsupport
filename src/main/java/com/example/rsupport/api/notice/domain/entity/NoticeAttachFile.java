@@ -21,7 +21,7 @@ public class NoticeAttachFile {
     @Column(name = "attach_file_id")
     private Long id;
 
-    private String filePath;
+    private String filename;
 
     @ManyToOne(cascade = ALL, fetch = LAZY)
     @JoinColumn(name = "notice_id")
@@ -31,8 +31,8 @@ public class NoticeAttachFile {
     }
 
     @Builder
-    public NoticeAttachFile(String filePath, Notice notice) {
-        this.filePath = filePath;
+    public NoticeAttachFile(String filename, Notice notice) {
+        this.filename = filename;
         this.notice = notice;
     }
 }

@@ -2,20 +2,19 @@ package com.example.rsupport.notice.acceptance;
 
 import com.example.rsupport.api.notice.domain.dto.NoticeRegisterRequestDTO;
 import com.example.rsupport.api.notice.domain.enums.NoticeMessage;
-import com.example.rsupport.exception.common.controllerAdvice.GeneralParameterErrorCode;
-import com.example.rsupport.exception.notice.NoticeCrudErrorCode;
 import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.annotation.DirtiesContext;
@@ -28,7 +27,7 @@ import static com.example.rsupport.exception.common.controllerAdvice.GeneralPara
 import static com.example.rsupport.exception.notice.NoticeCrudErrorCode.*;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -48,6 +47,7 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureRestDocs
+@DisplayName("공지사항 CRUD 인수(통합) 테스트")
 public class NoticeCrudAcceptanceTest {
 
     @LocalServerPort

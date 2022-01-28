@@ -6,6 +6,7 @@ import com.example.rsupport.api.notice.domain.entity.Notice;
 import com.example.rsupport.api.notice.domain.entity.NoticeAttachFile;
 import com.example.rsupport.api.notice.repository.NoticeAttachFileRepository;
 import com.example.rsupport.api.notice.repository.NoticeRepository;
+import com.example.rsupport.api.notice.utils.AttachFileManager;
 import com.example.rsupport.exception.common.BizException;
 import com.example.rsupport.exception.notice.NoticeCrudErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,10 +26,11 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final NoticeAttachFileRepository noticeAttachFileRepository;
+    private final AttachFileManager attachFileManager;
 
-    public Long registerNotice(NoticeRegisterRequestDTO dto, List<MultipartFile> attachFiles) {
+    public Long registerNotice(NoticeRegisterRequestDTO dto, List<MultipartFile> attachFiles)n {
         Notice savedNotice = noticeRepository.save(dto.toEntity());
-        List<NoticeAttachFile> files = convertMulipartFileToDTO(attachFiles, savedNotice);
+        List<NoticeAttachFile> files = attachFileManager.saveUploadFilesToDisk(attachFiles, savedNotice);
         noticeAttachFileRepository.saveAll(files);
 
         return savedNotice.getId();
@@ -49,13 +51,5 @@ public class NoticeService {
         noticeRepository.deleteById(noticeId);
     }
 
-    private List<NoticeAttachFile> convertMulipartFileToDTO(List<MultipartFile> attachFiles, Notice notice) {
-        List<NoticeAttachFile> files = new ArrayList<>();
 
-        attachFiles.forEach(file -> files.add(NoticeAttachFile.builder()
-                .filePath(file.getOriginalFilename())
-                .notice(notice)
-                .build()));
-        return files;
-    }
 }
