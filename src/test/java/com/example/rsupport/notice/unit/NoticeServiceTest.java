@@ -17,7 +17,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -134,6 +133,57 @@ public class NoticeServiceTest {
                     .isInstanceOf(BizException.class)
                     .hasMessage(NoticeCrudErrorCode.NOTICE_CRUD_FAIL.getMsg());
             files.clear();
+        }
+    }
+
+    @Nested
+    @DisplayName("공지사항 수정 테스트")
+    class NoticeUpdateTest {
+
+        @Test
+        @DisplayName("공지사항 수정 성공")
+        void successUpdateNotice() {
+            
+        }
+
+        @Test
+        @DisplayName("공지사항 수정 실패")
+        void failUpdateNotice() {
+
+        }
+    }
+
+    @Nested
+    @DisplayName("공지사항 삭제 테스트")
+    class NoticeDeleteTest {
+
+        @Test
+        @DisplayName("공지사항 삭제 성공")
+        void successDeleteNotice() {
+
+        }
+
+        @Test
+        @DisplayName("공지사항 삭제 실패")
+        void failDeleteNotice() {
+
+        }
+    }
+
+    @Nested
+    @DisplayName("공지사항 단건 조회 테스트")
+    class NoticeSelectOneTest {
+
+        @Test
+        @DisplayName("공지사항 단건 조회 성공")
+        void successSelectOneNotice() {
+
+        }
+
+        @Test
+        @DisplayName("공지사항 단건 조회 실패")
+        void failSelectOneNotice() {
+
         }
     }
 }

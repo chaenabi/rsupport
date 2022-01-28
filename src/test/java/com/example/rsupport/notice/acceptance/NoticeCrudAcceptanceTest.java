@@ -190,4 +190,55 @@ public class NoticeCrudAcceptanceTest {
             assertThat(list).containsExactlyInAnyOrder(NOTICE_CONTENT_IS_NULL.getMsg(), NOTICE_CONTENT_IS_EMPTY.getMsg());
         }
     }
+
+    @Nested
+    @DisplayName("공지사항 수정 테스트")
+    class NoticeUpdateTest {
+
+        @Test
+        @DisplayName("공지사항 수정 성공")
+        void successUpdateNotice() {
+
+        }
+
+        @Test
+        @DisplayName("공지사항 수정 실패")
+        void failUpdateNotice() {
+
+        }
+    }
+
+    @Nested
+    @DisplayName("공지사항 삭제 테스트")
+    class NoticeDeleteTest {
+
+        @Test
+        @DisplayName("공지사항 삭제 성공")
+        void successDeleteNotice() {
+
+        }
+
+        @Test
+        @DisplayName("공지사항 삭제 실패")
+        void failDeleteNotice() {
+
+        }
+    }
+
+    @Nested
+    @DisplayName("공지사항 단건 조회 테스트")
+    class NoticeSelectOneTest {
+
+        @Test
+        @DisplayName("공지사항 단건 조회 성공")
+        void successSelectOneNotice() {
+
+        }
+
+        @Test
+        @DisplayName("공지사항 단건 조회 실패")
+        void failSelectOneNotice() {
+
+        }
+    }
 }
