@@ -72,6 +72,10 @@ dependencies {
 
     // json serializer
     implementation 'com.google.code.gson:gson:2.8.9'
+
+    // file upload
+    implementation 'commons-fileupload:commons-fileupload:1.4'
+    implementation 'commons-io:commons-io:2.11.0'
 }
 
 test {

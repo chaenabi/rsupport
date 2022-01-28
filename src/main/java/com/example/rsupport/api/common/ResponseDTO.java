@@ -1,5 +1,6 @@
 package com.example.rsupport.api.notice.common;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.gson.Gson;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -15,9 +16,16 @@ import org.springframework.http.HttpStatus;
  */
 @Getter
 public class ResponseDTO<T> {
-    private final T data;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private T data;
     private final String message;
     private final HttpStatus httpStatus;
+
+    public ResponseDTO(SuccessMessage message, HttpStatus httpStatus) {
+        this.message = message.getSuccessMsg();
+        this.httpStatus = httpStatus;
+    }
 
     public ResponseDTO(T data, SuccessMessage message, HttpStatus httpStatus) {
         this.data = data;
