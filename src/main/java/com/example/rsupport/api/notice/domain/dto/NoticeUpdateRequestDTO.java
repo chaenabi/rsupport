@@ -11,7 +11,6 @@ import java.beans.ConstructorProperties;
 public class NoticeUpdateRequestDTO {
 
     @NotNull(message = "공지사항 번호가 반드시 전달되어야 합니다.")
-    @NotEmpty(message = "공지사항 번호가 비어 있으면 안됩니다.")
     private final Long noticeId;
 
     @NotNull(message = "공지사항 제목이 반드시 전달되어야 합니다.")
