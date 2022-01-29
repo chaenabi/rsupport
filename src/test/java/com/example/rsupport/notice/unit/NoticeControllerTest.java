@@ -24,7 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -76,7 +75,7 @@ public class NoticeControllerTest {
 
         @Test
         @DisplayName("공지사항 등록이 성공적으로 수행되어야 합니다")
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("all")
         void successRegister() throws Exception {
             // 준비
             registerRequestDTO = NoticeRegisterRequestDTO.builder()
@@ -109,7 +108,7 @@ public class NoticeControllerTest {
 
         @Test
         @DisplayName("공지사항 등록이 성공적으로 수행되어야 합니다_다중 첨부파일 포함")
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("all")
         void successRegisterIncludeAttachFiles() throws Exception {
             // 준비
             registerRequestDTO = NoticeRegisterRequestDTO.builder()
@@ -277,7 +276,7 @@ public class NoticeControllerTest {
 
         @Test
         @DisplayName("공지사항 수정이 성공적으로 수행되어야 합니다")
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("all")
         void successUpdate() throws Exception {
             // 준비
             updateRequestDTO = NoticeUpdateRequestDTO.builder()
@@ -514,19 +513,19 @@ public class NoticeControllerTest {
                     .title("조회된 공지사항 제목")
                     .content("조회된 공지사항 내용")
                     .startTime(LocalDateTime.of(
-                                    startTime.getYear(),
-                                    startTime.getMonth(),
-                                    startTime.getDayOfMonth(),
-                                    startTime.getHour(),
-                                    startTime.getMinute(),
-                                    startTime.getSecond()))
+                            startTime.getYear(),
+                            startTime.getMonth(),
+                            startTime.getDayOfMonth(),
+                            startTime.getHour(),
+                            startTime.getMinute(),
+                            startTime.getSecond()))
                     .endTime(LocalDateTime.of(
-                                    endTime.getYear(),
-                                    endTime.getMonth(),
-                                    endTime.getDayOfMonth(),
-                                    endTime.getHour(),
-                                    endTime.getMinute(),
-                                    endTime.getSecond()))
+                            endTime.getYear(),
+                            endTime.getMonth(),
+                            endTime.getDayOfMonth(),
+                            endTime.getHour(),
+                            endTime.getMinute(),
+                            endTime.getSecond()))
                     .sawCount(1)
                     .build();
 

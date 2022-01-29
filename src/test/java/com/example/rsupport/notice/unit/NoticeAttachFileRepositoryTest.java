@@ -50,7 +50,7 @@ public class NoticeAttachFileRepositoryTest {
 
     @Test
     @DisplayName("특정 공지사항과 관련된 첨부파일 목록을 읽을 수 있어야 합니다")
-    @Rollback(value = true)
+    @Rollback()
     void successFindByNoticeId() {
         // 준비
         File file1 = new File("src/test/resources/avatar.jpg");
