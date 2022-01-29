@@ -9,6 +9,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
+/**
+ * 공지사항 첨부파일 레포지토리 구현클래스.
+ * 쿼리 DSL을 기본 API로 사용합니다.
+ *
+ * @author MC Lee
+ * @created 2022-01-26
+ * @since 2.6.3 spring boot
+ * @since 0.0.1 dev
+ */
 @Repository
 public class NoticeAttachFileRepositoryImpl implements NoticeAttachFileQueryDSLRepository {
 

@@ -6,10 +6,17 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.AUTO;
 
+/**
+ * 공지사항 첨부파일 엔티티
+ *
+ * @author MC Lee
+ * @created 2022-01-26
+ * @since 2.6.3 spring boot
+ * @since 0.0.1 dev
+ */
 @Entity
 @Table
 @Getter
@@ -31,7 +38,8 @@ public class NoticeAttachFile {
     }
 
     @Builder
-    public NoticeAttachFile(String filename, Notice notice) {
+    public NoticeAttachFile(Long id, String filename, Notice notice) {
+        this.id = id;
         this.filename = filename;
         this.notice = notice;
     }

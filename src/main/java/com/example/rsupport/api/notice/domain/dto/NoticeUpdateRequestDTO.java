@@ -7,6 +7,14 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.beans.ConstructorProperties;
 
+/**
+ * 공지사항 수정 정보를 임시로 담기 위해 사용하는 DTO
+ *
+ * @author MC Lee
+ * @created 2022-01-26
+ * @since 2.6.3 spring boot
+ * @since 0.0.1 dev
+ */
 @Getter
 public class NoticeUpdateRequestDTO {
 

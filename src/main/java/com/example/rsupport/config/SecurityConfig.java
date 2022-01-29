@@ -8,6 +8,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+/**
+ * 보안 설정 클래스.
+ *
+ * @author MC Lee
+ * @created 2022-01-26
+ * @since 2.6.3 spring boot
+ * @since 0.0.1 dev
+ */
 @RequiredArgsConstructor
 @Configuration
 @Order(1)

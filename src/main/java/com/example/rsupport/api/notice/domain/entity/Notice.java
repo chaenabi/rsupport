@@ -9,16 +9,23 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REMOVE;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.AUTO;
 
+/**
+ * 공지사항 엔티티
+ *
+ * @author MC Lee
+ * @created 2022-01-26
+ * @since 2.6.3 spring boot
+ * @since 0.0.1 dev
+ */
 @Entity
 @Table
 @Getter
 @Setter
-@ToString(exclude = "attachFile")
+@ToString(exclude = "attachFiles")
 public class Notice {
 
     @Id
@@ -32,9 +39,10 @@ public class Notice {
     private int sawCount;
 
     @OneToMany(mappedBy = "notice", cascade = {REMOVE}, orphanRemoval = true, fetch = LAZY)
-    private List<NoticeAttachFile> attachFile;
+    private List<NoticeAttachFile> attachFiles;
 
-    public Notice() {}
+    public Notice() {
+    }
 
     @Builder
     public Notice(Long id, String title, String content, LocalDateTime startTime, LocalDateTime endTime, int sawCount, List<NoticeAttachFile> attachFile) {
@@ -44,6 +52,6 @@ public class Notice {
         this.startTime = startTime;
         this.endTime = endTime;
         this.sawCount = sawCount;
-        this.attachFile = attachFile;
+        this.attachFiles = attachFile;
     }
 }

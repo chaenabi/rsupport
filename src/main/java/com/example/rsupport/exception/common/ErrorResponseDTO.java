@@ -27,7 +27,6 @@ import java.util.Objects;
  * @since 2.6.3 spring boot
  * @since 0.0.1 dev
  */
-
 @Getter
 public class ErrorResponseDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")

@@ -10,6 +10,14 @@ import java.util.Arrays;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+/**
+ * 공지사항 처리 중 발생하는 에러 목록을 열거형으로 관리하여 가독성 향상
+ *
+ * @author MC Lee
+ * @created 2022-01-29
+ * @since 2.6.3 spring boot
+ * @since 0.0.1 dev
+ */
 @Getter
 @RequiredArgsConstructor
 public enum NoticeCrudErrorCode implements ErrorCode {

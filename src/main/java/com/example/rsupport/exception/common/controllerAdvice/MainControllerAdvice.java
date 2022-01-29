@@ -52,6 +52,7 @@ public class MainControllerAdvice {
                 .message("필수 항목이 모두 비어있습니다.")
                 .httpStatus(HttpStatus.NOT_FOUND)
                 .build();
+        log.error(e.getMessage());
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.NOT_FOUND);
     }
 

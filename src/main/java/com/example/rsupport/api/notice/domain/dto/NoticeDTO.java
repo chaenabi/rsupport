@@ -1,7 +1,6 @@
 package com.example.rsupport.api.notice.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -11,6 +10,14 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+/**
+ * 공지사항 DTO
+ *
+ * @author MC Lee
+ * @created 2022-01-26
+ * @since 2.6.3 spring boot
+ * @since 0.0.1 dev
+ */
 @Getter
 public class NoticeDTO {
 
