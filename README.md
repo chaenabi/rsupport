@@ -84,20 +84,19 @@ curl -X POST http://localhost:8080/v1/notice -H "Content-Type: multipart/form-da
 ```shell
 curl -X POST http://localhost:8080/v1/notice -H "Content-Type: multipart/form-data" -F "data={\"title\":\"saved notice title\", \"content\":\"saved notice content\"};type=application/json" -F 'attachFiles[]=@./알서포트과제.txt;type=multipart/form-data' -F 'attachFiles[]=@./coverage_20220129.png;type=multipart/form-data'
 ```
-`*주의사항*` 실재하는 파일을 전송해야 합니다.
+`*주의사항*` 반드시 실재하는 파일을 전송해야 합니다. (파일이 존재하지 않을 경우 파일읽기에 실패하여 에러발생)
 
-예를 들어 첨부하려는 파일명이 그림.png이고 현재 디렉토리에 존재한다면,
+예를 들어 첨부하려는 파일명이 그림.png이고 해당 파일이 현재 디렉토리에 존재한다고 가정할 경우
 
-반드시 아래와 같은 방식으로 위의 명령어 중 일부를 수정한 뒤 요청을 보내셔야 합니다.
+아래와 같은 방식으로 위의 명령어 중 일부를 수정한 뒤 요청을 보내야 합니다.
 ```
 'attachFiles[]=@./알서포트과제.txt;multipart/form-data'
-
-부분을
-
-'attachFiles[]=@./그림.png;type=multipart/form-data'
- 
-다음과 같은 방식으로 변경하여 요청합니다.
 ```
+부분을
+```
+'attachFiles[]=@./그림.png;type=multipart/form-data' 
+```
+다음과 같은 방식으로 변경하여 요청하시면 됩니다.
 
 ### 공지사항 수정
 ```shell
