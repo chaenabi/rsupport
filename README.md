@@ -2,7 +2,7 @@
 
 ## 내용
 
-알서포트 입사 과제
+알서포트 입사 과제 (기술 면접 합격)
 
 ## 진행 기간
 
@@ -62,6 +62,14 @@
 git clone https://github.com/chaenabi/rsupport
 또는 깃허브에서 프로젝트를 zip 파일로 다운로드 및 압축해제
 ```
+
+실행법
+```
+cd rsupport
+gradlew bootRun
+```
+
+(jar 파일로 실행 시)
 
 윈도우일 경우 cmd 창에서 아래의 명령어를 순차적으로 실행하세요.
 
